@@ -83,8 +83,9 @@ processResources {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-tasks.register('deobfJar', Jar) { jar ->
-    jar.archiveBaseName.set("${archivesBaseName}-${archiveVersion}-deobf.${archiveExtension}")
+task deobfJar(type: Jar) {
+    from(sourceSets.main.output)
+    archiveName = "${baseName}-${version}-deobf.${extension}"
 }
 
 artifacts {
