@@ -124,6 +124,9 @@ public class Book {
 	public String extend = "";
 	@SerializedName("allow_extensions")
 	public boolean allowExtensions = true;
+
+	@SerializedName("pause_game")
+	public boolean pauseGame = true;
 	
 	public Map<String, String> macros = new HashMap<>();
 	

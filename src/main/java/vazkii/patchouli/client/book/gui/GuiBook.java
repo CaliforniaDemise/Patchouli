@@ -229,7 +229,7 @@ public abstract class GuiBook extends GuiScreen {
 
 	@Override
 	public boolean doesGuiPauseGame() {
-		return false;
+		return book.pauseGame;
 	}
 
 	@Override

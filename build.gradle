@@ -3,15 +3,13 @@ buildscript {
         mavenCentral()
         maven {
             name = "forge"
-            url = "https://files.minecraftforge.net/maven"
-        }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+            url = "https://maven.minecraftforge.net"
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath("com.anatawa12.forge:ForgeGradle:2.3-1.0.+") {
+            changing = true
+        }
     }
 }
 
@@ -21,7 +19,7 @@ apply plugin: 'maven-publish'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-ext.configFile = file('build.properties')
+ext.configFile = file('gradle.properties')
 
 ext.config = parseConfig(configFile)
 
@@ -45,7 +43,7 @@ dependencies {
 
 minecraft {
     version = "${config.mc_version}-${config.forge_version}"
-    runDir = "eclipse/assets"
+    runDir = "run"
 
     mappings = config.mc_mappings
     replace 'GRADLE:BUILD', config.build_number
@@ -81,32 +79,36 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info', '**/psd/**'
     }
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-task deobfJar(type: Jar) {
-    from(sourceSets.main.output)
-    archiveName = "${baseName}-${version}-deobf.${extension}"
+tasks.register('deobfJar', Jar) { jar ->
+    jar.archiveBaseName.set("${archivesBaseName}-${archiveVersion}-deobf.${archiveExtension}")
 }
 
 artifacts {
     archives deobfJar
 }
 
-publishing {
+/*publishing { I can't use Maven tasks well i will learn how to use them later pfft
 
     publications {
 
-        mavenJava(MavenPublication) {
+        mavenJava (MavenPublication) {
 
             groupId project.group
             artifactId project.archivesBaseName
             version project.version
             from components.java
 
-            artifact deobfJar {
-
-                classifier 'deobf'
+            artifacts {
+                deobfJar {
+                    cl
+                    classifier 'deobf'
+                }
             }
+
         }
     }
 
@@ -117,7 +119,7 @@ publishing {
             url "file://" + System.getenv("local_maven")
         }
     }
-}
+}*/
 
 /**
  * Increments the buildnumber in your config file, and saves it
@@ -125,17 +127,18 @@ publishing {
  * will be incremented every time tasks are configured, i.e every
  * time gradle is run on this project. 
  */
-task incrementBuildNumber {doFirst{
+/*task incrementBuildNumber {doFirst{
     config.build_number = (config.build_number.toString().toInteger()) + 1
     configFile.withWriter {
         config.toProperties().store(it, "")
     }
-}}
+}} this is just weird to me. Why? */
 
 import java.util.regex.*
-task sortArtifacts(type: Copy) {
-    from jar.destinationDir
-    into config.dir_output 
+
+tasks.register('sortArtifacts', Copy) { copy ->
+    from jar.destinationDirectory
+    into config.dir_output
     //Put each jar with a classifier in a subfolder with the classifier as its name
     eachFile {
         //This matcher is used to get the classifier of the jar
@@ -144,14 +147,14 @@ task sortArtifacts(type: Copy) {
         if (matcher.matches())
         {
             def classifier = matcher.group('classifier')
-            /* Set the relative path to change the destination, since 
+            /* Set the relative path to change the destination, since
              * Gradle doesn't seem to like the absolute path being set*/
             it.relativePath = it.relativePath.parent.append(false, classifier, it.name)
         }
     }
 }
 
-def parseConfig(File config) {
+static def parseConfig(File config) {
     config.withReader {
         def prop = new Properties()
         prop.load(it)
