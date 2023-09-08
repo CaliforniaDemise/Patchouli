@@ -12,15 +12,13 @@ import java.util.Set;
 
 public class ValidationUtils {
 
-    public static AdvancementList ADVANCEMENT_LIST = ReflectionHelper.getPrivateValue(AdvancementManager.class, null, 2);
-
     public static boolean isValidAdvancement(String advancement) {
-        return ADVANCEMENT_LIST.getAdvancement(new ResourceLocation(advancement)) != null;
+        return AdvancementManager.ADVANCEMENT_LIST.getAdvancement(new ResourceLocation(advancement)) != null;
     }
 
     public static void validateAdvancement(String advancement) {
         if(advancement != null && !advancement.isEmpty()) {
-            Set<Advancement> advancements = Sets.newHashSet(ADVANCEMENT_LIST.getAdvancements());
+            Set<Advancement> advancements = Sets.newHashSet(AdvancementManager.ADVANCEMENT_LIST.getAdvancements());
             if(!advancements.isEmpty())
                 Preconditions.checkState(isValidAdvancement(advancement), "Invalid advancement:" + advancement);
         }

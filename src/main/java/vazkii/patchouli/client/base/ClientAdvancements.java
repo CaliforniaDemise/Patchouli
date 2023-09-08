@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import vazkii.patchouli.client.book.ClientBookRegistry;
@@ -21,23 +20,10 @@ import vazkii.patchouli.common.book.Book;
 import vazkii.patchouli.common.book.BookRegistry;
 
 import javax.annotation.Nonnull;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
-import java.util.Map;
 
 public class ClientAdvancements {
-	private static final MethodHandle ADVANCEMENT_TO_PROGRESS;
-	public static boolean refreshOnFirstOpen = true;
 
-	static {
-		Field field = ObfuscationReflectionHelper.findField(ClientAdvancementManager.class, "field_192803_d");
-		try {
-			ADVANCEMENT_TO_PROGRESS = MethodHandles.lookup().unreflectGetter(field);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Failed to reflect advancement progress map field", e);
-		}
-	}
+	public static boolean refreshOnFirstOpen = true;
 
 	public static void setDoneAdvancements(boolean showToast, boolean reset) {
 		updateLockStatus(reset);
@@ -69,14 +55,7 @@ public class ClientAdvancements {
 	}
 
 	private static AdvancementProgress getProgress(ClientAdvancementManager manager, Advancement advancement) {
-		try {
-			@SuppressWarnings("unchecked")
-			Map<Advancement, AdvancementProgress> map = (Map<Advancement, AdvancementProgress>) ADVANCEMENT_TO_PROGRESS.invokeExact(manager);
-			return map.get(advancement);
-		} catch (Throwable t) {
-			Throwables.throwIfUnchecked(t);
-			throw new RuntimeException("Failed to reflect advancement progress map!", t);
-		}
+		return manager.advancementToProgress.get(advancement);
 	}
 
 	@SubscribeEvent

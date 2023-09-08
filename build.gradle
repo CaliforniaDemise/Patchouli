@@ -80,12 +80,22 @@ processResources {
         exclude 'mcmod.info', '**/psd/**'
     }
 
+    rename '(.+_at.cfg)', 'META-INF/$1'
+
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-task deobfJar(type: Jar) {
+tasks.register("deobfJar", Jar) {
     from(sourceSets.main.output)
-    archiveName = "${baseName}-${version}-deobf.${extension}"
+    archiveName("${archiveBaseName}-${archiveVersion}-deobf.${archiveExtension}")
+}
+
+tasks.jar {
+    from(sourceSets.main.output)
+    manifest {
+        def attributes = [:]
+        attributes["FMLAT"] = "patchouli_at.cfg"
+    }
 }
 
 artifacts {

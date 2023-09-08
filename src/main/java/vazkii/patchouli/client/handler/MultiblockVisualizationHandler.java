@@ -44,7 +44,6 @@ import vazkii.patchouli.client.base.ClientTicker;
 import vazkii.patchouli.client.base.PersistentData.DataHolder.BookData.Bookmark;
 import vazkii.patchouli.common.multiblock.Multiblock;
 import vazkii.patchouli.common.multiblock.StateMatcher;
-import vazkii.patchouli.common.util.ReflectionUtil;
 import vazkii.patchouli.common.util.RotationUtil;
 
 public class MultiblockVisualizationHandler {
@@ -62,20 +61,6 @@ public class MultiblockVisualizationHandler {
 	private static int timeComplete;
 	private static IBlockState lookingState;
 	private static BlockPos lookingPos;
-
-	private static Field fieldRenderPosX;
-	private static Field fieldRenderPosY;
-	private static Field fieldRenderPosZ;
-
-	static {
-		try {
-			fieldRenderPosX = ReflectionUtil.accessField(RenderManager.class, "field_78725_b", "D");
-			fieldRenderPosY = ReflectionUtil.accessField(RenderManager.class, "field_78726_c", "D");
-			fieldRenderPosZ = ReflectionUtil.accessField(RenderManager.class, "field_78723_d", "D");
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException("Unable to find necessary fields", e);
-		}
-	}
 
 	public static void setMultiblock(Multiblock multiblock, String name, Bookmark bookmark, boolean flip) {
 		setMultiblock(multiblock, name, bookmark, flip, pos->pos);
@@ -224,14 +209,9 @@ public class MultiblockVisualizationHandler {
 
 		RenderManager manager = Minecraft.getMinecraft().getRenderManager();
 		BlockRendererDispatcher dispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-		double posX = 0;
-		double posY = 0;
-		double posZ = 0;
-		try {
-			posX = (Double)fieldRenderPosX.get(manager);
-			posY = (Double)fieldRenderPosY.get(manager);
-			posZ = (Double)fieldRenderPosZ.get(manager);
-		} catch (IllegalAccessException ignored) { }
+		double posX = manager.renderPosX;
+		double posY = manager.renderPosY;
+		double posZ = manager.renderPosZ;
 
 		GlStateManager.pushMatrix();
 		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
@@ -301,7 +281,6 @@ public class MultiblockVisualizationHandler {
 					GlStateManager.scale(scale, scale, scale);
 
 					brd.renderBlockBrightness(Blocks.CONCRETE.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.RED), 1.0F);
-
 
 				} else brd.renderBlockBrightness(state, 1.0F);
 			} catch(NullPointerException e) { 
