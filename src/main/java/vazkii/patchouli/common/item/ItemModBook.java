@@ -1,7 +1,9 @@
 package vazkii.patchouli.common.item;
 
 import java.util.List;
+import java.util.Objects;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,7 +20,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -30,6 +31,7 @@ import vazkii.patchouli.common.book.BookRegistry;
 import vazkii.patchouli.common.network.NetworkHandler;
 import vazkii.patchouli.common.network.message.MessageOpenBookGui;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ItemModBook extends Item {
@@ -40,14 +42,13 @@ public class ItemModBook extends Item {
 		setMaxStackSize(1);
 		setCreativeTab(CreativeTabs.MISC);
 		setRegistryName(new ResourceLocation(Patchouli.MOD_ID, "guide_book"));
-		setTranslationKey(getRegistryName().toString());
+		setTranslationKey(Objects.requireNonNull(getRegistryName()).toString());
 
 		this.addPropertyOverride(new ResourceLocation("completion"), new IItemPropertyGetter() {
 			@SideOnly(Side.CLIENT)
-			public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
+			public float apply(@Nonnull ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn) {
 				Book book = getBook(stack);
 				float progression = 0f; // default incomplete
-
 				if (book != null) {
 					int totalEntries = 0;
 					int unlockedEntries = 0;
@@ -55,8 +56,7 @@ public class ItemModBook extends Item {
 					for(BookEntry entry : book.contents.entries.values()) {
 						if (!entry.isSecret()) {
 							totalEntries++;
-							if(!entry.isLocked())
-								unlockedEntries++;
+							if(!entry.isLocked()) unlockedEntries++;
 						}
 					}
 
@@ -84,7 +84,7 @@ public class ItemModBook extends Item {
 
 	@Override 
 	@SideOnly(Side.CLIENT)
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+	public void getSubItems(CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
 		String tabName = tab.getTabLabel();
 		BookRegistry.INSTANCE.books.values().forEach(b -> {
 			if(!b.noBook && !b.isExtension && (tab == CreativeTabs.SEARCH || b.creativeTab.equals(tabName)))
@@ -93,7 +93,7 @@ public class ItemModBook extends Item {
 	}
 
 	public static Book getBook(ItemStack stack) {
-		if(!stack.hasTagCompound() || !stack.getTagCompound().hasKey(TAG_BOOK))
+		if(!stack.hasTagCompound() || !Objects.requireNonNull(stack.getTagCompound()).hasKey(TAG_BOOK))
 			return null;
 
 		String bookStr = stack.getTagCompound().getString(TAG_BOOK);
@@ -102,39 +102,37 @@ public class ItemModBook extends Item {
 	}
 
 	@Override
-	public String getCreatorModId(ItemStack itemStack) {
+	public String getCreatorModId(@Nonnull ItemStack itemStack) {
 		Book book = getBook(itemStack);
-		if(book != null)
-			return book.owner.getModId();
+		if(book != null) return book.owner.getModId();
 
 		return super.getCreatorModId(itemStack);
 	}
 
+	@Nonnull
 	@Override
-	public String getItemStackDisplayName(ItemStack stack) {
+	public String getItemStackDisplayName(@Nonnull ItemStack stack) {
 		Book book = getBook(stack);
-		if(book != null)
-			return I18n.translateToLocal(book.name).trim();
+		if(book != null) return I18n.format(book.name).trim();
 
 		return super.getItemStackDisplayName(stack);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@Nonnull ItemStack stack, World worldIn, @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
 
 		Book book = getBook(stack);
-		if(book != null && book.contents != null)
-			tooltip.add(book.contents.getSubtitle());
+		if(book != null && book.contents != null) tooltip.add(book.contents.getSubtitle());
 	}
 
+	@Nonnull
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
+	public ActionResult<ItemStack> onItemRightClick(@Nonnull World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		ItemStack stack = playerIn.getHeldItem(handIn);
 		Book book = getBook(stack);
-		if(book == null)
-			return new ActionResult<>(EnumActionResult.FAIL, stack);
+		if(book == null) return new ActionResult<>(EnumActionResult.FAIL, stack);
 
 		if(playerIn instanceof EntityPlayerMP) {
 			NetworkHandler.INSTANCE.sendTo(new MessageOpenBookGui(book.resourceLoc.toString()), (EntityPlayerMP) playerIn);

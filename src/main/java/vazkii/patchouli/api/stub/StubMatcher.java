@@ -10,7 +10,7 @@ public class StubMatcher implements IStateMatcher {
 
 	public static final StubMatcher INSTANCE = new StubMatcher();
 
-	private IBlockState state = Blocks.AIR.getDefaultState();
+	private final IBlockState state = Blocks.AIR.getDefaultState();
 
 	private StubMatcher() { }
 

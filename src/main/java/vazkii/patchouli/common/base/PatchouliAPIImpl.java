@@ -34,8 +34,7 @@ public class PatchouliAPIImpl implements IPatchouliAPI {
 	
 	public static final PatchouliAPIImpl INSTANCE = new PatchouliAPIImpl();
 	
-	private PatchouliAPIImpl() {
-	}
+	private PatchouliAPIImpl() {}
 	
 	@Override
 	public boolean isStub() {

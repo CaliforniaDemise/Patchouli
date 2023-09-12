@@ -87,7 +87,7 @@ processResources {
 
 tasks.register("deobfJar", Jar) {
     from(sourceSets.main.output)
-    archiveName("${archiveBaseName}-${archiveVersion}-deobf.${archiveExtension}")
+    archiveName("${baseName}-${version}-deobf.${extension}")
 }
 
 tasks.jar {

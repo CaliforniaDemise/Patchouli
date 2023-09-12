@@ -2,6 +2,7 @@ package vazkii.patchouli.common.util;
 
 import java.lang.reflect.Constructor;
 
+import net.minecraftforge.fml.common.registry.EntityEntry;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.command.EntityNotFoundException;
@@ -13,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import vazkii.patchouli.common.base.Patchouli;
 
 public class EntityUtil {
 
@@ -31,11 +33,14 @@ public class EntityUtil {
 			try {
 				nbt = JsonToNBT.getTagFromJson(nbtStr);
 			} catch(NBTException e) {
-				e.printStackTrace();
+				Patchouli.LOGGER.error("Exception while loading entity! Could not read NBT from {}", nbtStr, e);
 			}
 		}
-		
-		final Class<? extends Entity> clazz = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityId)).getEntityClass();
+
+		EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entityId));
+		if (entry == null) return null;
+
+		final Class<? extends Entity> clazz = entry.getEntityClass();
 		final NBTTagCompound useNbt = nbt;
 		final String useId = entityId;
 		try {
@@ -69,7 +74,7 @@ public class EntityUtil {
 		return Pair.of(entityId, nbtStr);
 	}
 	
-	public static interface EntityCreator {
+	public interface EntityCreator {
 		
 		Entity create(World world) throws EntityNotFoundException;
 		

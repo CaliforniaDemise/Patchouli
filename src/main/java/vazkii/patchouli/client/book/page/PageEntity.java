@@ -31,7 +31,7 @@ public class PageEntity extends PageWithText {
 	@SerializedName("default_rotation")
 	float defaultRotation = -45f;
 
-	transient boolean errored;
+	public transient boolean errored;
 	transient Entity entity;
 	transient EntityCreator creator;
 	transient float renderScale, offset;
@@ -39,14 +39,13 @@ public class PageEntity extends PageWithText {
 	@Override
 	public void build(BookEntry entry, int pageNum) {
 		super.build(entry, pageNum);
-		
 		creator = EntityUtil.loadEntity(entityId);
+		if (creator == null) errored = true;
 	}
 	
 	@Override
 	public void onDisplayed(GuiBookEntry parent, int left, int top) {
 		super.onDisplayed(parent, left, top);
-		
 		loadEntity(parent.mc.world);
 	}
 	

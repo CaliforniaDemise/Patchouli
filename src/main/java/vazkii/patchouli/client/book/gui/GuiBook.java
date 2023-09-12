@@ -43,6 +43,8 @@ import vazkii.patchouli.common.base.PatchouliConfig;
 import vazkii.patchouli.common.base.PatchouliSounds;
 import vazkii.patchouli.common.book.Book;
 
+import javax.annotation.Nonnull;
+
 public abstract class GuiBook extends GuiScreen {
 
 	public static final int FULL_WIDTH = 272;
@@ -151,11 +153,10 @@ public abstract class GuiBook extends GuiScreen {
 		buttonList.removeIf((b) -> b instanceof GuiButtonBookBookmark);
 		int y = 0;
 		List<Bookmark> bookmarks = PersistentData.data.getBookData(book).bookmarks;
-		for(int i = 0; i < bookmarks.size(); i++) {
-			Bookmark bookmark = bookmarks.get(i);
-			buttonList.add(new GuiButtonBookBookmark(this, bookLeft + FULL_WIDTH, bookTop + TOP_PADDING + y, bookmark));
-			y += 12;
-		}
+        for (Bookmark bookmark : bookmarks) {
+            buttonList.add(new GuiButtonBookBookmark(this, bookLeft + FULL_WIDTH, bookTop + TOP_PADDING + y, bookmark));
+            y += 12;
+        }
 		
 		y += (y == 0 ? 0 : 2);
 		if(shouldAddAddBookmarkButton() && bookmarks.size() <= MAX_BOOKMARKS)
@@ -233,7 +234,7 @@ public abstract class GuiBook extends GuiScreen {
 	}
 
 	@Override
-	public void actionPerformed(GuiButton button) throws IOException {
+	public void actionPerformed(@Nonnull GuiButton button) throws IOException {
 		if(button instanceof GuiButtonBookBack)
 			back(false);
 		else if(button instanceof GuiButtonBookArrow)

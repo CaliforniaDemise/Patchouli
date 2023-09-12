@@ -1,19 +1,17 @@
 package vazkii.patchouli.common.base;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.Ignore;
 import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.Locale;
+import java.util.Map;
 
 @Config(modid = Patchouli.MOD_ID)
 public class PatchouliConfig {
@@ -39,23 +37,10 @@ public class PatchouliConfig {
 			"If this is set to true, advancements without display info (missing an icon, name or description) will be detected and synced if they are completed.")
 	public static boolean triumphOverride = true;
 
-	@Ignore private static Map<String, Boolean> configFlags = new HashMap<>();
-	
+	private static final Map<String, Boolean> flags = new Object2BooleanOpenHashMap<>();
+
 	public static void preInit() {
 		MinecraftForge.EVENT_BUS.register(ChangeListener.class);
-
-		List<ModContainer> mods = Loader.instance().getActiveModList();
-		for(ModContainer container : mods)
-			setFlag("mod:" + container.getModId(), true);
-		
-		setFlag("debug", Patchouli.debug);
-		
-		updateFlags();
-	}
-	
-	private static void updateFlags() {
-		setFlag("advancements_disabled", disableAdvancementLocking);
-		setFlag("testing_mode", testingMode);
 	}
 	
 	public static boolean getConfigFlag(String name) {
@@ -63,15 +48,30 @@ public class PatchouliConfig {
 			return getConfigFlagAND(name.replaceAll("[&|]", "").split(","));
 		if(name.startsWith("|"))
 			return getConfigFlagOR(name.replaceAll("[&|]", "").split(","));
-			
+
 		boolean target = true;
 		if(name.startsWith("!")) {
 			name = name.substring(1);
 			target = false;
 		}
-		name = name.trim().toLowerCase();
 
-		return (configFlags.containsKey(name) && configFlags.get(name)) == target;
+		name = name.trim().toLowerCase(Locale.ENGLISH);
+
+		switch (name) {
+			case "debug": return target == Patchouli.debug;
+			case "advancements_disabled": return target == disableAdvancementLocking;
+			case "testing_mode": return target == testingMode;
+			default: break;
+		}
+
+		if (name.startsWith("mod:")) {
+			return target == Loader.isModLoaded(name.substring(4));
+		}
+		else {
+			Boolean value = flags.get(name);
+			if (value == null) return false;
+			return target == value;
+		}
 	}
 	
 	public static boolean getConfigFlagAND(String[] tokens) {
@@ -89,9 +89,9 @@ public class PatchouliConfig {
 		
 		return false;
 	}
-	
+
 	public static void setFlag(String flag, boolean value) {
-		configFlags.put(flag.trim().toLowerCase(), value);
+		flags.put(flag, value);
 	}
 
 	public static class ChangeListener {
@@ -100,12 +100,8 @@ public class PatchouliConfig {
 		public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent eventArgs) {
 			if(eventArgs.getModID().equals(Patchouli.MOD_ID)) {
 	            ConfigManager.sync(Patchouli.MOD_ID, Config.Type.INSTANCE);
-	            updateFlags();
 	            Patchouli.proxy.requestBookReload();
 			}
 		}
-
 	}
-	
-	
 }

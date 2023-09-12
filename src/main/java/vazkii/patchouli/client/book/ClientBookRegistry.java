@@ -18,7 +18,6 @@ import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
 import vazkii.patchouli.client.base.ClientAdvancements;
 import vazkii.patchouli.client.book.page.PageCrafting;
 import vazkii.patchouli.client.book.page.PageEmpty;
@@ -34,10 +33,13 @@ import vazkii.patchouli.client.book.page.PageTemplate;
 import vazkii.patchouli.client.book.page.PageText;
 import vazkii.patchouli.client.book.template.BookTemplate;
 import vazkii.patchouli.client.book.template.TemplateComponent;
+import vazkii.patchouli.common.base.Patchouli;
 import vazkii.patchouli.common.base.PatchouliConfig;
 import vazkii.patchouli.common.book.Book;
 import vazkii.patchouli.common.book.BookRegistry;
 import vazkii.patchouli.common.util.SerializationUtil;
+
+import javax.annotation.Nonnull;
 
 public class ClientBookRegistry implements IResourceManagerReloadListener {
 
@@ -49,7 +51,7 @@ public class ClientBookRegistry implements IResourceManagerReloadListener {
 	public String currentLang;
 
 	public static final ClientBookRegistry INSTANCE = new ClientBookRegistry();
-	
+
 	private ClientBookRegistry() { 
 		gson = new GsonBuilder()
 				.registerTypeHierarchyAdapter(BookPage.class, new LexiconPageAdapter())
@@ -82,11 +84,11 @@ public class ClientBookRegistry implements IResourceManagerReloadListener {
 	}
 
 	@Override
-	public void onResourceManagerReload(IResourceManager resourceManager) {
+	public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
 		try {
 			currentLang = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode();
 		} catch (Exception e) {
-			LogManager.getLogger().error("Could not obtain language code, defaulting to en_us", e);
+			Patchouli.LOGGER.error("Exception while loading Language! Could not obtain language code, defaulting to en_us", e);
 			currentLang = BookContents.DEFAULT_LANG;
 		}
 

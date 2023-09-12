@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
@@ -39,7 +40,7 @@ public class Multiblock implements IMultiblock, IBlockAccess {
 	int centerX, centerY, centerZ;
 	boolean symmetrical;
 	World world;
-	
+
 	private final transient Map<BlockPos, TileEntity> teCache = new HashMap<>();
 
 	public Multiblock(String[][] pattern, Object... targets) {
@@ -256,20 +257,22 @@ public class Multiblock implements IMultiblock, IBlockAccess {
 
     @Override
     @Nullable
-    public TileEntity getTileEntity(BlockPos pos) {
+    public TileEntity getTileEntity(@Nonnull BlockPos pos) {
 		IBlockState state = getBlockState(pos);
 		if (state.getBlock().hasTileEntity(state)) {
 			return teCache.computeIfAbsent(pos.toImmutable(), p -> state.getBlock().createTileEntity(world, state));
 		}
+
 		return null;
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public int getCombinedLight(BlockPos pos, int lightValue) {
+    public int getCombinedLight(@Nonnull BlockPos pos, int lightValue) {
         return 0xF000F0;
     }
 
+	@Nonnull
     @Override
     public IBlockState getBlockState(BlockPos pos) {
         int x = pos.getX();
@@ -278,6 +281,7 @@ public class Multiblock implements IMultiblock, IBlockAccess {
         if (x < 0 || y < 0 || z < 0 || x >= sizeX || y >= sizeY || z >= sizeZ) {
             return Blocks.AIR.getDefaultState();
         }
+
         return stateTargets[x][y][z].getDisplayedState();
     }
 
@@ -287,26 +291,27 @@ public class Multiblock implements IMultiblock, IBlockAccess {
         return state.getBlock().isAir(state, this, pos);
     }
 
+	@SideOnly(Side.CLIENT)
     @Override
-    @SideOnly(Side.CLIENT)
-    public Biome getBiome(BlockPos pos) {
+	@Nonnull
+    public Biome getBiome(@Nonnull BlockPos pos) {
         return Biomes.PLAINS;
     }
 
     @Override
-    public int getStrongPower(BlockPos pos, EnumFacing direction) {
+    public int getStrongPower(@Nonnull BlockPos pos, @Nonnull EnumFacing direction) {
         return 0;
     }
 
+	@SideOnly(Side.CLIENT)
     @Override
-    @SideOnly(Side.CLIENT)
+	@Nonnull
     public WorldType getWorldType() {
         return WorldType.DEFAULT;
     }
 
     @Override
-    public boolean isSideSolid(BlockPos pos, EnumFacing side, boolean _default) {
+    public boolean isSideSolid(@Nonnull BlockPos pos, @Nonnull EnumFacing side, boolean _default) {
         return getBlockState(pos).isSideSolid(this, pos, side);
     }
-
 }

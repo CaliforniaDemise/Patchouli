@@ -12,10 +12,10 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * custom compoenents should be drawn independently of what page a book
  * is currently on.
  */
-public class BookDrawScreenEvent
-		extends BookEvent {
+public class BookDrawScreenEvent extends BookEvent {
 	
 	public final GuiScreen gui;
+
 	public final int mouseX;
 	public final int mouseY;
 	public final float partialTicks;

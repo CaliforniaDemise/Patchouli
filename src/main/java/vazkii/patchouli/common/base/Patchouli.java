@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Patchouli.MOD_ID, name = Patchouli.MOD_NAME)
 public class Patchouli {
@@ -22,6 +24,8 @@ public class Patchouli {
 	public static final String BUILD = "GRADLE:BUILD";
 	public static final String VERSION = "GRADLE:VERSION-" + BUILD;
 	public static final String PREFIX = MOD_ID + ":";
+
+	public static final Logger LOGGER = LogManager.getLogger("Patchouli");
 
 	public static final String COMMON_PROXY = "vazkii.patchouli.common.base.CommonProxy";
 	public static final String CLIENT_PROXY = "vazkii.patchouli.client.base.ClientProxy";

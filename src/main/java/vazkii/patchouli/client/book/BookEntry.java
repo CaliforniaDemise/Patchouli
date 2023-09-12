@@ -17,6 +17,7 @@ import vazkii.patchouli.client.base.ClientAdvancements;
 import vazkii.patchouli.client.base.PersistentData;
 import vazkii.patchouli.client.base.PersistentData.DataHolder.BookData;
 import vazkii.patchouli.client.book.page.PageEmpty;
+import vazkii.patchouli.client.book.page.PageEntity;
 import vazkii.patchouli.client.book.page.PageQuest;
 import vazkii.patchouli.common.base.PatchouliConfig;
 import vazkii.patchouli.common.book.Book;
@@ -62,7 +63,7 @@ public class BookEntry extends AbstractReadStateHolder implements Comparable<Boo
 		List<BookPage> pages = getPages();
 		for (int i = 0; i < pages.size(); i++) {
 			BookPage page = pages.get(i);
-			if (page.anchor != null && anchor.equals(page.anchor))
+			if (anchor.equals(page.anchor))
 				return i;
 		}
 
@@ -175,9 +176,15 @@ public class BookEntry extends AbstractReadStateHolder implements Comparable<Boo
 		this.resource = resource;
 		for(int i = 0; i < pages.length; i++)
 			if(pages[i].canAdd(book)) {
-				realPages.add(pages[i]);
 				try {
 					pages[i].build(this, i);
+
+					if (pages[i] instanceof PageEntity) {
+						PageEntity page = (PageEntity) pages[i];
+						if (!page.errored) realPages.add(page);
+					}
+					else realPages.add(pages[i]);
+
 				} catch(Exception e) {
 					throw new RuntimeException("Error while loading entry " + resource + " page " + i, e);
 				}

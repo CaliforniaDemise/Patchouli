@@ -22,7 +22,6 @@ public class PatchouliItems {
 
 	public static void preInit() {
 		book = new ItemModBook();
-
 		MinecraftForge.EVENT_BUS.register(PatchouliItems.class);
 	}
 
@@ -44,9 +43,7 @@ public class PatchouliItems {
 
 		ModelLoader.setCustomMeshDefinition(book, (stack) -> {
 			Book book = ItemModBook.getBook(stack);
-			if (book != null)
-				return book.modelResourceLoc;
-
+			if (book != null) return book.modelResourceLoc;
 			return Book.DEFAULT_MODEL_RES;
 		});
 	}

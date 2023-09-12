@@ -8,8 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * This event is fired on the {@link MinecraftForge#EVENT_BUS} after a
  * book is reloaded.
  */
-public class BookContentsReloadEvent
-    extends Event {
+public class BookContentsReloadEvent extends Event {
 
   public final ResourceLocation book;
 
