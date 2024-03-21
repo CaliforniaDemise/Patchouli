@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Patchouli.MOD_ID, name = Patchouli.MOD_NAME)
+@Mod(modid = Patchouli.MOD_ID, name = Patchouli.MOD_NAME, version = Tags.MOD_VERSION)
 public class Patchouli {
 
 	public static boolean debug = ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
@@ -21,8 +21,6 @@ public class Patchouli {
 	// Mod Constants
 	public static final String MOD_ID = "patchouli";
 	public static final String MOD_NAME = "Patchouli";
-	public static final String BUILD = "GRADLE:BUILD";
-	public static final String VERSION = "GRADLE:VERSION-" + BUILD;
 	public static final String PREFIX = MOD_ID + ":";
 
 	public static final Logger LOGGER = LogManager.getLogger("Patchouli");

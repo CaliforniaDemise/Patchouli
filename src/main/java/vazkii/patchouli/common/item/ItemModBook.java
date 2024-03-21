@@ -74,11 +74,9 @@ public class ItemModBook extends Item {
 	
 	public static ItemStack forBook(String book) {
 		ItemStack stack = new ItemStack(PatchouliItems.book);
-
 		NBTTagCompound cmp = new NBTTagCompound();
 		cmp.setString(TAG_BOOK, book);
 		stack.setTagCompound(cmp);
-
 		return stack;
 	}
 
@@ -105,16 +103,15 @@ public class ItemModBook extends Item {
 	public String getCreatorModId(@Nonnull ItemStack itemStack) {
 		Book book = getBook(itemStack);
 		if(book != null) return book.owner.getModId();
-
 		return super.getCreatorModId(itemStack);
 	}
 
 	@Nonnull
 	@Override
+	@SideOnly(Side.CLIENT)
 	public String getItemStackDisplayName(@Nonnull ItemStack stack) {
 		Book book = getBook(stack);
 		if(book != null) return I18n.format(book.name).trim();
-
 		return super.getItemStackDisplayName(stack);
 	}
 
@@ -122,13 +119,13 @@ public class ItemModBook extends Item {
 	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull ItemStack stack, World worldIn, @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-
 		Book book = getBook(stack);
 		if(book != null && book.contents != null) tooltip.add(book.contents.getSubtitle());
 	}
 
 	@Nonnull
 	@Override
+	@SideOnly(Side.CLIENT)
 	public ActionResult<ItemStack> onItemRightClick(@Nonnull World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		ItemStack stack = playerIn.getHeldItem(handIn);
 		Book book = getBook(stack);
@@ -142,6 +139,4 @@ public class ItemModBook extends Item {
 
 		return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 	}
-
-
 }
