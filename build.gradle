@@ -48,6 +48,10 @@ jar {
     // exclude test assets
     exclude "**/assets/patchouli/patchouli_books/**"
     exclude "**/assets/patchouli/advancements/**"
+
+    manifest {
+        attributes(['FMLAT': 'patchouli_at.cfg'])
+    }
 }
 
 for (File at : sourceSets.getByName("main").resources.files) {

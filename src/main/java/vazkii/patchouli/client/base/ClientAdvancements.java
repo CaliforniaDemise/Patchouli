@@ -1,6 +1,5 @@
 package vazkii.patchouli.client.base;
 
-import com.google.common.base.Throwables;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementProgress;
 import net.minecraft.client.Minecraft;
