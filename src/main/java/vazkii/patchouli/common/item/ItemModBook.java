@@ -125,7 +125,6 @@ public class ItemModBook extends Item {
 
 	@Nonnull
 	@Override
-	@SideOnly(Side.CLIENT)
 	public ActionResult<ItemStack> onItemRightClick(@Nonnull World worldIn, EntityPlayer playerIn, @Nonnull EnumHand handIn) {
 		ItemStack stack = playerIn.getHeldItem(handIn);
 		Book book = getBook(stack);

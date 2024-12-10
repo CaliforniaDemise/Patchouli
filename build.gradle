@@ -33,6 +33,7 @@ dependencies {
 minecraft {
     mcVersion = "1.12.2"
     injectedTags.put('MOD_VERSION', project.version)
+    extraRunJvmArguments.addAll("-Xms512m", "-Xmx2048m")
 }
 
 tasks.injectTags.configure {
