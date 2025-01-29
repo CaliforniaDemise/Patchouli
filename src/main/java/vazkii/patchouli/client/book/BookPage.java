@@ -15,6 +15,7 @@ import vazkii.patchouli.client.base.ClientAdvancements;
 import vazkii.patchouli.client.book.gui.GuiBookEntry;
 import vazkii.patchouli.common.base.PatchouliConfig;
 import vazkii.patchouli.common.book.Book;
+import vazkii.patchouli.common.util.ItemStackUtil;
 import vazkii.patchouli.common.util.ValidationUtils;
 
 public abstract class BookPage {
@@ -29,13 +30,20 @@ public abstract class BookPage {
 	private transient List<GuiButton> buttons;
 	public transient int left, top;
 	public transient JsonObject sourceObject;
+	public transient ItemStack itemStack;
 	
-	protected String type, flag, advancement, anchor;
+	protected String type, flag, advancement, anchor, link_item;
 	
 	public void build(BookEntry entry, int pageNum) {
 		this.book = entry.book;
 		this.entry = entry;
 		this.pageNum = pageNum;
+		if (link_item != null && !link_item.isEmpty()) {
+			this.itemStack = ItemStackUtil.loadStackFromString(link_item);
+			if (!this.itemStack.isEmpty()) {
+				entry.addRelevantStack(this.itemStack, pageNum);
+			}
+		}
 		ValidationUtils.validateAdvancement(this.advancement);
 	}
 	
