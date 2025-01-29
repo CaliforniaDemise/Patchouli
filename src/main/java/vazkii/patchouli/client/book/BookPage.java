@@ -38,9 +38,11 @@ public abstract class BookPage {
 		this.book = entry.book;
 		this.entry = entry;
 		this.pageNum = pageNum;
-		this.itemStack = ItemStackUtil.loadStackFromString(link_item);
-		if (!this.itemStack.isEmpty()) {
-			entry.addRelevantStack(this.itemStack, pageNum);
+		if (link_item != null && !link_item.isEmpty()) {
+			this.itemStack = ItemStackUtil.loadStackFromString(link_item);
+			if (!this.itemStack.isEmpty()) {
+				entry.addRelevantStack(this.itemStack, pageNum);
+			}
 		}
 		ValidationUtils.validateAdvancement(this.advancement);
 	}
